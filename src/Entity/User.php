@@ -3,6 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -26,6 +29,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: NoteFrais::class)]
+    private Collection $notesFrais;
+
+    #[ORM\Column(length: 255)]
+    private ?string $nom = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $prenom = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $dateNaissance = null;
+
+    public function __construct()
+    {
+        $this->notesFrais = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -95,5 +115,71 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection<int, NoteFrais>
+     */
+    public function getNotesFrais(): Collection
+    {
+        return $this->notesFrais;
+    }
+
+    public function addNotesFrai(NoteFrais $notesFrai): static
+    {
+        if (!$this->notesFrais->contains($notesFrai)) {
+            $this->notesFrais->add($notesFrai);
+            $notesFrai->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNotesFrai(NoteFrais $notesFrai): static
+    {
+        if ($this->notesFrais->removeElement($notesFrai)) {
+            // set the owning side to null (unless already changed)
+            if ($notesFrai->getUser() === $this) {
+                $notesFrai->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $nom): static
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function getPrenom(): ?string
+    {
+        return $this->prenom;
+    }
+
+    public function setPrenom(string $prenom): static
+    {
+        $this->prenom = $prenom;
+
+        return $this;
+    }
+
+    public function getDateNaissance(): ?\DateTimeInterface
+    {
+        return $this->dateNaissance;
+    }
+
+    public function setDateNaissance(\DateTimeInterface $dateNaissance): static
+    {
+        $this->dateNaissance = $dateNaissance;
+
+        return $this;
     }
 }
