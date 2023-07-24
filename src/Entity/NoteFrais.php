@@ -3,12 +3,26 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use App\Controller\NoteFraisController;
 use App\Repository\NoteFraisRepository;
 use Doctrine\DBAL\Types\Types;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: NoteFraisRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new Get(name: 'app_note_frais_all', uriTemplate: 'api/notefrais/getall', controller: NoteFraisController::class),
+        new Get(name: 'app_note_frais_get', uriTemplate: 'api/notefrais/get/{id}', controller: NoteFraisController::class),
+        new POST(name: 'app_note_frais_create', uriTemplate: 'api/notefrais/create', controller: NoteFraisController::class),
+        new PUT(name: 'app_note_frais_update', uriTemplate: 'api/notefrais/update/{id}', controller: NoteFraisController::class),
+        new DELETE(name: 'app_note_frais_delete', uriTemplate: 'api/notefrais/delete/{id}', controller: NoteFraisController::class),
+    ]
+)]
 class NoteFrais
 {
     #[ORM\Id]

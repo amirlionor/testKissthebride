@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\NoteFrais;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * @extends ServiceEntityRepository<NoteFrais>
@@ -16,9 +17,13 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class NoteFraisRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(
+        ManagerRegistry $registry,
+        EntityManagerInterface $manager
+    )
     {
         parent::__construct($registry, NoteFrais::class);
+        $this->manager = $manager;
     }
 
 //    /**
@@ -45,4 +50,17 @@ class NoteFraisRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+/**
+ *
+ */
+    public function removeNote(NoteFrais $noteFrais): void
+    {
+        $this->manager->remove($noteFrais);
+        $this->manager->flush();
+    }
+    public function saveNoteFrais(NoteFrais $noteFrais) : void
+    {
+        $this->manager->persist($noteFrais);
+        $this->manager->flush();
+    }
 }

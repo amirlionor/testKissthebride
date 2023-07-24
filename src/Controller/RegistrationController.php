@@ -9,6 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\User;
+use DateTime;
 
 /**
  * @Route("/api", name="api_")
@@ -23,6 +24,9 @@ class RegistrationController extends AbstractController
         $em = $doctrine->getManager();
         $decoded = json_decode($request->getContent());
         $email = $decoded->email;
+        $nom = $decoded->nom;
+        $prenom = $decoded->prenom;
+        $dateNaissance = $decoded->date_naissance;
         $plaintextPassword = $decoded->password;
 
         $user = new User();
@@ -32,7 +36,9 @@ class RegistrationController extends AbstractController
         );
         $user->setPassword($hashedPassword);
         $user->setEmail($email);
-        //$user->setUsername($email);
+        $user->setNom($nom);
+        $user->setPrenom($prenom);
+        $user->setDateNaissance(new DateTime($dateNaissance));
         $em->persist($user);
         $em->flush();
 
